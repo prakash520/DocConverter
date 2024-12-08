@@ -26,8 +26,7 @@ struct DocConverterApp: App {
     
     var body: some Scene {
         WindowGroup {
-            // ContentView()
-            DocumentView(viewModel: DocumentViewModel())
+            HomeView()
                 .onChange(of: scenePhase) { newPhase in
                     if newPhase == .background {
                         clearTemporaryDirectory()

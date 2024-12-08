@@ -10,11 +10,7 @@ import PDFKit
 
 final class DocumentViewModel: ObservableObject {
     
-    @Published var items: [DocumentModelType] {
-        didSet {
-            print(items.count)
-        }
-    }
+    @Published var items: [DocumentModelType] 
     @Published var selectedImage: UIImage?
     @Published var documentName: String
     
