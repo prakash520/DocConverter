@@ -13,6 +13,7 @@ final class DocumentViewModel: ObservableObject {
     @Published var items: [DocumentModelType] 
     @Published var selectedImage: UIImage?
     @Published var documentName: String
+    @Published var pdfURL: URL?
     
     var canCreatePDF: Bool {
         items.contains(where: {
@@ -69,7 +70,7 @@ final class DocumentViewModel: ObservableObject {
         CoreDataManager.shared.saveDocumentWithImages(documentName: documentName, images: images)
     }
     
-    func createPDF() -> URL? {
+    func generatePDF()  {
         let pdfDocument = PDFDocument()
         var pageIndex = 0
         
@@ -84,8 +85,9 @@ final class DocumentViewModel: ObservableObject {
         
         let temporaryURL = FileManager.default.temporaryDirectory.appendingPathComponent("Document.pdf")
         if pdfDocument.write(to: temporaryURL) {
-            return temporaryURL
+            pdfURL = temporaryURL
+        } else {
+            pdfURL = nil
         }
-        return nil
     }
 }

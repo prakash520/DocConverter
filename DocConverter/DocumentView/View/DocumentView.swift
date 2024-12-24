@@ -20,8 +20,6 @@ struct DocumentView: View {
     
     @State private var isShowingShareSheet = false
     @State private var isShowingNameSheet = false
-    @State private var pdfURL: URL?
-    @State private var newDocumentName: String = ""
     
     var body: some View {
         VStack {
@@ -45,8 +43,8 @@ struct DocumentView: View {
                 .padding(.trailing, 20)
                 
                 Button(action: {
-                    pdfURL = viewModel.createPDF()
-                    if pdfURL != nil {
+                    viewModel.generatePDF()
+                    if viewModel.pdfURL != nil {
                         isShowingShareSheet = true
                     }
                 }) {
@@ -82,12 +80,14 @@ struct DocumentView: View {
             }
         }
         .sheet(isPresented: $isShowingShareSheet) {
-            if let url = pdfURL {
+            if let url = viewModel.pdfURL {
                 ShareSheet(activityItems: [url]) {
                     // Remove the shared file after sharing
                     try? FileManager.default.removeItem(at: url)
                     print("Temporary file deleted.")
                 }
+            } else {
+                Text("No PDF to share")
             }
         }
         .sheet(isPresented: $isShowingNameSheet) {
@@ -96,18 +96,17 @@ struct DocumentView: View {
                     .font(.headline)
                     .padding()
                 
-                TextField("Document Name", text: $newDocumentName)
+                TextField("Document Name", text: $viewModel.documentName)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding()
                 
                 Button("Save") {
-                    viewModel.documentName = newDocumentName
                     viewModel.saveImage()
                     isShowingNameSheet = false
                 }
-                .disabled(newDocumentName.isEmpty)
+                .disabled(viewModel.documentName.isEmpty)
                 .padding()
-                .background(newDocumentName.isEmpty ? Color.gray : Color.blue)
+                .background(viewModel.documentName.isEmpty ? Color.gray : Color.blue)
                 .foregroundColor(.white)
                 .cornerRadius(8)
             }

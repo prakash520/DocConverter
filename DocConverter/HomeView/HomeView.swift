@@ -16,8 +16,8 @@ struct HomeView: View {
         GridItem(.flexible())
     ]
     
-    @State private var selectedDocument: Doc?
-
+    @State private var isNavigatingToNewDocument: Bool = false
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -39,14 +39,16 @@ struct HomeView: View {
                     }
                 }
                 Spacer()
-                TabView()
+                TabView(isNavigatingToNewDocument: $isNavigatingToNewDocument)
             }
-            .navigationTitle("Documents")
             .onAppear {
                 viewModel.fetchDocuments()
             }
             .navigationDestination(for: Doc.self) { document in
                 DocumentView(viewModel: DocumentViewModel(documentName: document.name ?? ""))
+            }
+            .navigationDestination(isPresented: $isNavigatingToNewDocument) {
+                DocumentView(viewModel: DocumentViewModel(documentName: ""))
             }
         }
     }
