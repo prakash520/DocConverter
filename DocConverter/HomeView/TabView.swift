@@ -27,7 +27,7 @@ struct TabView: View {
                         .foregroundColor(.white)
                 }
             }
-            .offset(y: -20)
+            .offset(y: -30)
             Spacer()
         }
         .padding(.horizontal)

@@ -60,6 +60,21 @@ final class CoreDataManager {
             return []
         }
     }
+ 
+    // MARK: - Fetch All Document Names
+    func fetchAllDocumentNames() -> [String] {
+        let fetchRequest: NSFetchRequest<NSDictionary> = NSFetchRequest(entityName: "Doc")
+        fetchRequest.resultType = .dictionaryResultType // Return results as dictionaries
+        fetchRequest.propertiesToFetch = ["name"] // Fetch only the name property
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            return results.compactMap { $0["name"] as? String }
+        } catch {
+            print("Failed to fetch document names: \(error.localizedDescription)")
+            return []
+        }
+    }
     
     // MARK: - Fetch Images for a Specific Document
     func fetchImages(for document: Doc) -> [UIImage] {

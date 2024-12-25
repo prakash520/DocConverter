@@ -20,6 +20,7 @@ struct DocumentView: View {
     
     @State private var isShowingShareSheet = false
     @State private var isShowingNameSheet = false
+    @State private var errorMessage: String? // Error message for validation
     
     var body: some View {
         VStack {
@@ -82,7 +83,6 @@ struct DocumentView: View {
         .sheet(isPresented: $isShowingShareSheet) {
             if let url = viewModel.pdfURL {
                 ShareSheet(activityItems: [url]) {
-                    // Remove the shared file after sharing
                     try? FileManager.default.removeItem(at: url)
                     print("Temporary file deleted.")
                 }
@@ -95,14 +95,26 @@ struct DocumentView: View {
                 Text("Enter Document Name")
                     .font(.headline)
                     .padding()
-                
+            
                 TextField("Document Name", text: $viewModel.documentName)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding()
                 
+                if let error = errorMessage {
+                    Text(error)
+                        .foregroundColor(.red)
+                        .font(.subheadline)
+                        .padding(.bottom, 5)
+                }
+                
                 Button("Save") {
-                    viewModel.saveImage()
-                    isShowingNameSheet = false
+                    if viewModel.isDocumentNameValid(viewModel.documentName) {
+                        viewModel.saveImage()
+                        isShowingNameSheet = false
+                        errorMessage = nil
+                    } else {
+                        errorMessage = "A document with this name already exists. Please choose another name."
+                    }
                 }
                 .disabled(viewModel.documentName.isEmpty)
                 .padding()
@@ -112,6 +124,14 @@ struct DocumentView: View {
             }
             .padding()
         }
+        .toolbar {
+                   ToolbarItem(placement: .principal) {
+                       Text(viewModel.documentName.isEmpty ? "Untitled" : viewModel.documentName)
+                           .font(.headline)
+                           .fontWeight(.semibold)
+                           .accessibilityAddTraits(.isHeader)
+                   }
+               }
     }
 }
 

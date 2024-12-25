@@ -11,6 +11,7 @@ import UIKit
 
 final class HomeViewModel: ObservableObject {
     @Published var documents: [Doc] = []
+    @Published var selectedDocumentForDeletion: Doc?
     
     private let coreDataManager: CoreDataManager
     
