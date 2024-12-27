@@ -17,7 +17,6 @@ struct HomeView: View {
     ]
     
     @State private var isNavigatingToNewDocument: Bool = false
-    @State private var isShowingActionSheet: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -33,10 +32,13 @@ struct HomeView: View {
                             ForEach(viewModel.documents, id: \.self) { document in
                                 NavigationLink(value: document) {
                                     DocumentCard(name: document.name ?? "Untitled")
-                                        .onLongPressGesture(minimumDuration: 1) {
-                                            isShowingActionSheet = true
-                                            viewModel.selectedDocumentForDeletion = document
-                                        }
+                                }
+                                .contextMenu {
+                                    Button(role: .destructive) {
+                                        viewModel.deleteDocument(document)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
                                 }
                             }
                         }
@@ -55,20 +57,6 @@ struct HomeView: View {
             }
             .navigationDestination(isPresented: $isNavigatingToNewDocument) {
                 DocumentView(viewModel: DocumentViewModel(documentName: ""))
-            }
-            .actionSheet(isPresented: $isShowingActionSheet) {
-                ActionSheet(
-                    title: Text("Delete Document"),
-                    message: Text("Are you sure you want to delete this document?"),
-                    buttons: [
-                        .destructive(Text("Delete")) {
-                            if let document = viewModel.selectedDocumentForDeletion {
-                                viewModel.deleteDocument(document)
-                            }
-                        },
-                        .cancel()
-                    ]
-                )
             }
         }
     }
